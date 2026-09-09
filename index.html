@@ -388,8 +388,7 @@
                 }
                 return { status: 'error', message: 'Username atau Password salah!' };
             }
-            
-            if (action === 'getAll') {
+                        if (action === 'getAll') {
                 let mockRecords = JSON.parse(localStorage.getItem('mock_records'));
                 if (!mockRecords) {
                     // Membuat 45 data dummy agar efek pagination sangat terlihat
@@ -402,9 +401,16 @@
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
-                let uploaded = mockRecords.filter(r => r.status === 'Uploaded').length;
+                let uploaded = mockRecords.filter(r => r.status === 'Uploaded' || r.status === 'Selesai').length;
                 let pending = mockRecords.length - uploaded;
-                return { status: 'success', message: 'OK', data: { stats: { total: mockRecords.length, uploaded, pending }, records: mockRecords } };
+                
+                // PERBAIKAN: Menyesuaikan struktur JSON agar sama dengan code.gs
+                return { 
+                    status: 'success', 
+                    message: 'OK', 
+                    stats: { total: mockRecords.length, uploaded, pending }, 
+                    records: mockRecords 
+                };
             }
             
             if (action === 'upload') {
@@ -557,8 +563,9 @@
             hideLoading();
             
             if(res.status === 'success') {
-                appState.data = res.data.records;
-                appState.stats = res.data.stats;
+                // PERBAIKAN: Membaca res.records dan res.stats langsung dari root object (bukan res.data.records)
+                appState.data = res.records || [];
+                appState.stats = res.stats || { total: 0, uploaded: 0, pending: 0 };
                 
                 document.getElementById('stat-total').textContent = appState.stats.total;
                 document.getElementById('stat-uploaded').textContent = appState.stats.uploaded;
