@@ -179,19 +179,21 @@
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-darkCard overflow-hidden rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg p-3">
-                                    <i class="ph ph-check-circle text-2xl text-emerald-600 dark:text-emerald-400"></i>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Sudah Upload</dt>
-                                        <dd class="flex items-baseline">
-                                            <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stat-uploaded">0</div>
-                                            <span class="ml-2 text-sm font-medium text-emerald-600 dark:text-emerald-400" id="stat-uploaded-perc">0%</span>
-                                        </dd>
-                                    </dl>
+                        <div class="bg-white dark:bg-darkCard overflow-hidden rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder hover:shadow-md transition-shadow">
+                            <div class="p-5">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg p-3">
+                                        <i class="ph ph-check-circle text-2xl text-emerald-600 dark:text-emerald-400"></i>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Selesai</dt>
+                                            <dd class="flex items-baseline">
+                                                <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stat-uploaded">0</div>
+                                                <span class="ml-2 text-sm font-medium text-emerald-600 dark:text-emerald-400" id="stat-uploaded-perc">0%</span>
+                                            </dd>
+                                        </dl>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -243,12 +245,12 @@
                             <input type="text" id="searchInput" onkeyup="filterTable()" class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-gray-50 dark:bg-darkBg dark:text-white" placeholder="Cari ID atau Nama...">
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <select id="filterStatus" onchange="filterTable()" class="block w-full sm:w-auto pl-3 pr-10 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <select id="filterStatus" onchange="filterTable()" class="block w-full sm:w-auto pl-3 pr-10 py-2 border border-gray-200 dark:border-darkBorder rounded-lg focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                                 <option value="all">Semua Status</option>
                                 <option value="Pending">Pending</option>
-                                <option value="Uploaded">Uploaded</option>
+                                <option value="Selesai">Selesai</option>
                             </select>
-                            <button onclick="loadData()" class="p-2 text-gray-500 bg-gray-100 dark:bg-darkBorder rounded-lg">
+                            <button onclick="loadData()" class="p-2 text-gray-500 hover:text-primary bg-gray-100 dark:bg-darkBorder hover:bg-blue-50 dark:hover:bg-primary/20 rounded-lg transition-colors tooltip" title="Refresh Data">
                                 <i class="ph ph-arrows-clockwise text-lg"></i>
                             </button>
                         </div>
