@@ -263,7 +263,6 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID Data</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Informasi</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal Update</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
@@ -387,9 +386,10 @@
             if (action === 'getAll') {
                 let mockRecords = JSON.parse(localStorage.getItem('mock_records'));
                 if (!mockRecords) {
-                    mockRecords = Array.from({length: 15}).map((_, i) => ({
-                        rowIdx: i + 2, id: `DT-00${15-i}`, nama: `Dokumentasi Proyek ${String.fromCharCode(65 + i)}`, keterangan: 'Mock keterangan data ' + i,
-                        status: i < 10 ? 'Uploaded' : 'Pending', url: i < 10 ? 'https://via.placeholder.com/150' : '', tanggal: i < 10 ? '12 Sep 2026 10:00' : ''
+                    // Membuat 45 data dummy agar efek pagination sangat terlihat
+                    mockRecords = Array.from({length: 45}).map((_, i) => ({
+                        rowIdx: i + 2, id: `DT-00${45-i}`, nama: `Dokumentasi Proyek ${i+1}`, keterangan: 'Keterangan observasi lapangan ' + (i+1),
+                        status: i < 15 ? 'Uploaded' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
@@ -403,8 +403,7 @@
                 let record = mockRecords.find(r => r.id === payload.recordId);
                 if (record) {
                     record.status = 'Uploaded';
-                    record.url = payload.fileData; // Simpan base64 langsung untuk preview
-                    record.tanggal = new Date().toLocaleString('id-ID');
+                    record.url = payload.fileData; 
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
                 return { status: 'success', message: 'Mock Upload Berhasil!', data: { url: payload.fileData } };
@@ -591,18 +590,17 @@
                 const paginatedData = filteredCacheData.slice((currentPage - 1) * rowsPerPage, (currentPage * rowsPerPage));
 
                 tbody.innerHTML = paginatedData.map(item => `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">${item.id}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
                             <div class="font-medium text-gray-900 dark:text-white">${item.nama}</div>
                             <div class="text-xs text-gray-400 mt-0.5 truncate w-48">${item.keterangan}</div>
                         </td>
                         <td class="px-6 py-4 text-sm">
-                            ${item.status === 'Uploaded' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">Sudah (ada)</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">Pending</span>'}
+                            ${item.status === 'Uploaded' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Sudah (ada)</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>'}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">${item.tanggal || '-'}</td>
                         <td class="px-6 py-4 text-right text-sm font-medium">
-                            ${item.status === 'Uploaded' ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md">Lihat File</a>` : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm">Upload</button>`}
+                            ${item.status === 'Uploaded' ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md inline-flex items-center"><i class="ph ph-link mr-1"></i> File</a>` : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm inline-flex items-center"><i class="ph ph-upload-simple mr-1"></i> Upload</button>`}
                         </td>
                     </tr>
                 `).join('');
