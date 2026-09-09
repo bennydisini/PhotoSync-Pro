@@ -557,7 +557,7 @@
             hideLoading();
             
             if(res.status === 'success') {
-                <!--appState.data = res.data.records; -->
+                appState.data = res.data.records;
                 appState.stats = res.data.stats;
                 
                 document.getElementById('stat-total').textContent = appState.stats.total;
