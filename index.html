@@ -262,6 +262,10 @@
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID Data</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Informasi</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kolom E</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kolom F</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kolom H</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kolom I</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
                                     </tr>
@@ -388,7 +392,10 @@
                 if (!mockRecords) {
                     // Membuat 45 data dummy agar efek pagination sangat terlihat
                     mockRecords = Array.from({length: 45}).map((_, i) => ({
-                        rowIdx: i + 2, id: `DT-00${45-i}`, nama: `Dokumentasi Proyek ${i+1}`, keterangan: 'Keterangan observasi lapangan ' + (i+1),
+                        rowIdx: i + 2, id: `DT-00${45-i}`, nama: `Dokumentasi Proyek ${i+1}`, 
+                        kolomE: `Nilai E${i+1}`, kolomF: `Nilai F${i+1}`, 
+                        kolomH: `Nilai H${i+1}`, kolomI: `Nilai I${i+1}`, 
+                        keterangan: 'Keterangan observasi lapangan ' + (i+1),
                         status: i < 15 ? 'Uploaded' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
@@ -596,6 +603,10 @@
                             <div class="font-medium text-gray-900 dark:text-white">${item.nama}</div>
                             <div class="text-xs text-gray-400 mt-0.5 truncate w-48">${item.keterangan}</div>
                         </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomE}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomF}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomH}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomI}</td>
                         <td class="px-6 py-4 text-sm">
                             ${item.status === 'Uploaded' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Sudah (ada)</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>'}
                         </td>
