@@ -116,6 +116,10 @@
                     <a href="#" onclick="switchMenu('data')" id="menu-data" class="menu-item text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-darkBorder/50 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
                         <i class="ph ph-database mr-3 text-lg group-hover:text-primary"></i> Data Upload
                     </a>
+                    <!-- TAMBAHAN: Menu Manajemen User -->
+                    <a href="#" onclick="switchMenu('users')" id="menu-users" class="hidden menu-item text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-darkBorder/50 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
+                        <i class="ph ph-users mr-3 text-lg group-hover:text-primary"></i> Manajemen User
+                    </a>
                 </nav>
             </div>
 
@@ -290,6 +294,32 @@
                     </div>
                 </div>
 
+                <!-- TAMBAHAN VIEW: MANAJEMEN USER -->
+                <div id="view-users" class="hidden space-y-4 animate-fade-in">
+                    <div class="flex justify-between items-center gap-4 bg-white dark:bg-darkCard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Data Pengguna</h2>
+                        <button onclick="openUserModal()" class="text-sm text-white bg-primary hover:bg-blue-700 font-medium inline-flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors">
+                            <i class="ph ph-plus-circle text-lg mr-2"></i> Tambah User
+                        </button>
+                    </div>
+                    <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-darkBorder">
+                                <thead class="bg-gray-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama & Username</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Akses Kampung</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-darkCard divide-y divide-gray-200 dark:divide-darkBorder" id="userTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
@@ -353,6 +383,54 @@
         </div>
     </div>
 
+    <!-- TAMBAHAN MODAL: MANAJEMEN USER -->
+    <div id="manage-user-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/75 dark:bg-gray-900/90 backdrop-blur-sm" onclick="closeUserModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white dark:bg-darkCard rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-gray-100 dark:border-darkBorder">
+                <form onsubmit="submitUser(event)">
+                    <div class="px-6 pt-5 pb-4 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="user-modal-title">Tambah User Baru</h3>
+                        <input type="hidden" id="form-u-row">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lengkap</label>
+                            <input type="text" id="form-u-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                            <input type="text" id="form-u-user" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                            <input type="text" id="form-u-pass" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                            <select id="form-u-role" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                                <option value="User">User (Akses Terbatas)</option>
+                                <option value="Administrator">Administrator (Akses Penuh)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Akses Kampung <span class="text-xs font-normal text-gray-400">(Khusus Role User)</span></label>
+                            <input type="text" id="form-u-kampung" placeholder="Contoh: Sukamaju" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <p class="mt-1 text-xs text-gray-500">Teks harus persis dengan isi pada tabel data (Kolom Kampung).</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 flex flex-row-reverse rounded-b-2xl">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">
+                            Simpan Data
+                        </button>
+                        <button type="button" onclick="closeUserModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- CORE LOGIC & API ENGINE -->
     <script>
         // ---------------------------------------------------------
@@ -384,33 +462,35 @@
             
             if (action === 'login') {
                 if (payload.username === 'admin' && payload.password === 'admin123') {
-                    return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama (Mock)' } };
+                    return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama', kampung: '' } };
+                } else if (payload.username === 'user' && payload.password === 'user123') {
+                    return { status: 'success', message: 'OK', data: { username: 'user', role: 'User', name: 'Petugas Lapangan', kampung: 'Sukamaju' } };
                 }
                 return { status: 'error', message: 'Username atau Password salah!' };
             }
-                        if (action === 'getAll') {
+            
+            if (action === 'getAll') {
                 let mockRecords = JSON.parse(localStorage.getItem('mock_records'));
                 if (!mockRecords) {
-                    // Membuat 45 data dummy agar efek pagination sangat terlihat
                     mockRecords = Array.from({length: 45}).map((_, i) => ({
                         rowIdx: i + 2, id: `DT-00${45-i}`, nama: `Dokumentasi Proyek ${i+1}`, 
-                        kolomE: `Nilai E${i+1}`, kolomF: `Nilai F${i+1}`, 
-                        kolomH: `Nilai H${i+1}`, kolomI: `Nilai I${i+1}`, 
-                        keterangan: 'Keterangan observasi lapangan ' + (i+1),
+                        kolomE: `Nilai Dusun ${i+1}`, kolomF: i % 2 === 0 ? `Sukamaju` : `Sukatani`, 
+                        kolomH: `NIK-${i+1}`, kolomI: `KK-${i+1}`, 
+                        keterangan: 'Keterangan observasi',
                         status: i < 15 ? 'Selesai' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
-                let uploaded = mockRecords.filter(r => r.status === 'Uploaded' || r.status === 'Selesai').length;
-                let pending = mockRecords.length - uploaded;
                 
-                // PERBAIKAN: Menyesuaikan struktur JSON agar sama dengan code.gs
-                return { 
-                    status: 'success', 
-                    message: 'OK', 
-                    stats: { total: mockRecords.length, uploaded, pending }, 
-                    records: mockRecords 
-                };
+                // MOCK FILTER BERDASARKAN KAMPUNG
+                let filtered = mockRecords;
+                if(payload.role !== 'Administrator' && payload.kampung) {
+                    filtered = mockRecords.filter(r => r.kolomF.toLowerCase() === payload.kampung.toLowerCase());
+                }
+
+                let uploaded = filtered.filter(r => r.status === 'Selesai').length;
+                let pending = filtered.length - uploaded;
+                return { status: 'success', message: 'OK', data: { stats: { total: filtered.length, uploaded, pending }, records: filtered } };
             }
             
             if (action === 'upload') {
@@ -426,6 +506,16 @@
 
             if (action === 'setup') {
                 return { status: 'success', message: 'Database Mock berhasil disetup!', data: {} };
+            }
+
+            if (action === 'getUsers') {
+                return { status: 'success', data: [
+                    { rowIdx: 2, username: 'admin', role: 'Administrator', name: 'Admin Utama', kampung: '' },
+                    { rowIdx: 3, username: 'user', role: 'User', name: 'Petugas Lapangan', kampung: 'Sukamaju' }
+                ]};
+            }
+            if (action === 'saveUser' || action === 'deleteUser') {
+                return { status: 'success', message: 'Aksi Mock User Berhasil' };
             }
         }
 
@@ -535,6 +625,14 @@
             document.getElementById('sidebar-name').textContent = appState.user.name;
             document.getElementById('sidebar-role').textContent = appState.user.role;
             document.getElementById('user-initial').textContent = appState.user.name.charAt(0).toUpperCase();
+            
+            // TAMPILKAN MENU MANAJEMEN USER JIKA ADMIN
+            if (appState.user.role === 'Administrator') {
+                document.getElementById('menu-users').classList.remove('hidden');
+            } else {
+                document.getElementById('menu-users').classList.add('hidden');
+            }
+
             updateClock();
             switchMenu('dashboard');
         }
@@ -552,14 +650,18 @@
 
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-data').classList.add('hidden');
+            document.getElementById('view-users').classList.add('hidden');
+
             document.getElementById(`view-${menuId}`).classList.remove('hidden');
             if (menuId === 'dashboard' || menuId === 'data') loadData();
+            if (menuId === 'users') loadUsers();
         }
 
         // --- DATA LOGIC --- //
         async function loadData() {
             showLoading('Memuat data terbaru...');
-            const res = await apiCall('getAll');
+            // KIRIM IDENTITAS USER UNTUK FILTER BACKEND
+            const res = await apiCall('getAll', { role: appState.user.role, kampung: appState.user.kampung });
             hideLoading();
             
             if(res.status === 'success') {
@@ -730,7 +832,77 @@
             showLoading('Membangun struktur Database...');
             const res = await apiCall('setup');
             hideLoading();
-            if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+                        if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+        }
+        
+        // --- LOGIKA MANAJEMEN USER --- //
+        async function loadUsers() {
+            showLoading('Memuat Data User...');
+            const res = await apiCall('getUsers');
+            hideLoading();
+            if (res.status === 'success') {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = res.data.map(u => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${u.name}</div>
+                            <div class="text-xs text-gray-500">${u.username}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs rounded-full ${u.role==='Administrator' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">${u.role}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ${u.role==='Administrator' ? '<span class="italic text-gray-400">Semua Akses</span>' : (u.kampung || '-')}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="openUserModal(${u.rowIdx}, '${u.username}', '${u.name}', '${u.role}', '${u.kampung}')" class="text-secondary hover:text-primary mr-3"><i class="ph ph-pencil-simple text-lg"></i></button>
+                            <button onclick="deleteUser(${u.rowIdx})" class="text-red-400 hover:text-red-600"><i class="ph ph-trash text-lg"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        function openUserModal(rowIdx = '', user = '', name = '', role = 'User', kampung = '') {
+            document.getElementById('form-u-row').value = rowIdx;
+            document.getElementById('form-u-user').value = user;
+            document.getElementById('form-u-name').value = name;
+            document.getElementById('form-u-role').value = role;
+            document.getElementById('form-u-kampung').value = kampung;
+            document.getElementById('form-u-pass').value = ''; 
+            document.getElementById('form-u-pass').required = rowIdx === ''; // Wajib isi jika user baru
+            document.getElementById('user-modal-title').textContent = rowIdx ? 'Edit User' : 'Tambah User Baru';
+            document.getElementById('manage-user-modal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('manage-user-modal').classList.add('hidden');
+        }
+
+        async function submitUser(e) {
+            e.preventDefault();
+            const payload = {
+                rowIdx: document.getElementById('form-u-row').value,
+                username: document.getElementById('form-u-user').value,
+                name: document.getElementById('form-u-name').value,
+                role: document.getElementById('form-u-role').value,
+                kampung: document.getElementById('form-u-kampung').value,
+                password: document.getElementById('form-u-pass').value
+            };
+            closeUserModal();
+            showLoading('Menyimpan User...');
+            const res = await apiCall('saveUser', payload);
+            hideLoading();
+            if (res.status === 'success') { showToast(res.message); loadUsers(); } else { showToast(res.message, 'error'); }
+        }
+
+        async function deleteUser(rowIdx) {
+            showLoading('Menghapus User...');
+            const res = await apiCall('deleteUser', { rowIdx });
+            hideLoading();
+            if (res.status === 'success') { showToast(res.message); loadUsers(); } else { showToast(res.message, 'error'); }
         }
     </script>
 </body>
