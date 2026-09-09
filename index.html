@@ -713,7 +713,12 @@
                 rowIdx: document.getElementById('modal-row-idx').value, recordId: document.getElementById('modal-record-id').textContent,
                 fileData: document.getElementById('base64-data').value, mimeType: document.getElementById('mime-type').value, fileName: document.getElementById('file-name').value
             };
-            if(!payload.fileData) return showToast('Pilih foto!', 'error');
+            
+            // VALIDASI: Pastikan file dokumentasi benar-benar tidak kosong
+            if(!payload.fileData || payload.fileData.trim() === '') {
+                return showToast('File dokumentasi tidak boleh kosong!', 'error');
+            }
+            
             closeModal();
             showLoading('Mengupload ke Server...');
             const res = await apiCall('upload', payload);
