@@ -256,7 +256,7 @@
 
                     <!-- Table Container -->
                     <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder overflow-hidden">
-                        <div class="overflow-x-auto">
+                           <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-darkBorder" id="dataTable">
                                 <thead class="bg-gray-50 dark:bg-slate-800/50">
                                     <tr>
@@ -396,7 +396,7 @@
                         kolomE: `Nilai E${i+1}`, kolomF: `Nilai F${i+1}`, 
                         kolomH: `Nilai H${i+1}`, kolomI: `Nilai I${i+1}`, 
                         keterangan: 'Keterangan observasi lapangan ' + (i+1),
-                        status: i < 15 ? 'Uploaded' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
+                        status: i < 15 ? 'Selesai' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
@@ -409,7 +409,7 @@
                 let mockRecords = JSON.parse(localStorage.getItem('mock_records')) || [];
                 let record = mockRecords.find(r => r.id === payload.recordId);
                 if (record) {
-                    record.status = 'Uploaded';
+                    record.status = 'Selesai';
                     record.url = payload.fileData; 
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
@@ -608,10 +608,10 @@
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomH}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomI}</td>
                         <td class="px-6 py-4 text-sm">
-                            ${item.status === 'Uploaded' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Sudah (ada)</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>'}
+                            ${item.status === 'Selesai' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Selesai</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>'}
                         </td>
                         <td class="px-6 py-4 text-right text-sm font-medium">
-                            ${item.status === 'Uploaded' ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md inline-flex items-center"><i class="ph ph-link mr-1"></i> File</a>` : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm inline-flex items-center"><i class="ph ph-upload-simple mr-1"></i> Upload</button>`}
+                            ${item.status === 'Selesai' ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md inline-flex items-center"><i class="ph ph-link mr-1"></i> File</a>` : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm inline-flex items-center"><i class="ph ph-upload-simple mr-1"></i> Upload</button>`}
                         </td>
                     </tr>
                 `).join('');
@@ -639,12 +639,22 @@
         // --- CHART & MODAL --- //
         function renderChart() {
             const ctx = document.getElementById('chartStatus').getContext('2d');
-            if (appState.chartInstance) appState.chartInstance.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e2e8f0' : '#475569';
+
+            if (appState.chartInstance) {
+                appState.chartInstance.destroy();
+            }
+
             appState.chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Uploaded', 'Pending'],
-                    datasets: [{ data: [appState.stats.uploaded, appState.stats.pending], backgroundColor: ['#10B981', '#F59E0B'], borderWidth: 0 }]
+                    labels: ['Selesai', 'Pending'],
+                    datasets: [{
+                        data: [appState.stats.uploaded, appState.stats.pending],
+                        backgroundColor: ['#10B981', '#F59E0B'],
+                        borderWidth: 0,
+                        hoverOffset: 4 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569' } } } }
             });
