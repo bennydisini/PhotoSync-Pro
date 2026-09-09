@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoSync Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#60A5FA',
+                        accent: '#38BDF8',
+                        darkBg: '#0F172A',
+                        darkCard: '#1E293B',
+                        darkBorder: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-enter { animation: slideInRight 0.3s ease-out forwards; }
+        .loader { border-top-color: #2563EB; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased transition-colors duration-300 dark:bg-darkBg dark:text-gray-100" id="app">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- Global Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 dark:bg-darkBg/80 backdrop-blur-sm z-[100] hidden items-center justify-center flex-col">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-16 w-16 mb-4"></div>
+        <h2 class="text-center text-primary text-xl font-semibold" id="loading-text">Memproses...</h2>
+        <p class="w-1/3 min-w-[250px] text-center text-gray-500 dark:text-gray-400 mt-2 text-sm">Mohon tunggu sebentar, sedang berkomunikasi dengan server.</p>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-darkBg p-4">
+        <div class="glass w-full max-w-md rounded-2xl shadow-2xl p-8 animate-fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+                    <i class="ph ph-camera-plus text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">PhotoSync <span class="text-primary">Pro</span></h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Masuk untuk mengelola data foto</p>
+                <div id="mock-badge" class="hidden mt-2 inline-block px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full border border-amber-200 font-medium">Mock Preview Mode Active</div>
+            </div>
+
+            <form id="login-form" class="space-y-5" onsubmit="handleLoginSubmit(event)">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ph ph-user text-gray-400"></i>
+                        </div>
+                        <input type="text" id="username" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-darkBorder rounded-lg focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkCard transition-colors" placeholder="admin">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ph ph-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-darkBorder rounded-lg focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkCard transition-colors" placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200">
+                    Masuk ke Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP LAYOUT -->
+    <div id="main-app" class="hidden h-screen flex overflow-hidden">
+        
+        <!-- Sidebar Desktop -->
+        <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-darkCard border-r border-gray-200 dark:border-darkBorder z-20 shadow-sm relative">
+            <div class="h-16 flex items-center px-6 border-b border-gray-200 dark:border-darkBorder">
+                <i class="ph ph-camera-plus text-primary text-2xl mr-2"></i>
+                <span class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">PhotoSync Pro</span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-4">
+                <nav class="space-y-1 px-3">
+                    <a href="#" onclick="switchMenu('dashboard')" id="menu-dashboard" class="menu-item bg-blue-50 dark:bg-primary/10 text-primary group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
+                        <i class="ph-fill ph-squares-four mr-3 text-lg"></i> Dashboard
+                    </a>
+                    <a href="#" onclick="switchMenu('data')" id="menu-data" class="menu-item text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-darkBorder/50 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
+                        <i class="ph ph-database mr-3 text-lg group-hover:text-primary"></i> Data Upload
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-gray-200 dark:border-darkBorder">
+                <div class="flex items-center w-full">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
+                        <span id="user-initial">A</span>
+                    </div>
+                    <div class="ml-3 flex-1 overflow-hidden">
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-200 truncate" id="sidebar-name">Admin Utama</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate" id="sidebar-role">Administrator</p>
+                    </div>
+                    <button onclick="handleLogout()" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10" title="Logout">
+                        <i class="ph ph-sign-out text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50 dark:bg-darkBg">
+            
+            <!-- Top Header -->
+            <header class="h-16 bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border-b border-gray-200 dark:border-darkBorder flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10">
+                <button class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-darkBorder">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+
+                <div class="flex-1 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white" id="greeting-text">Selamat Pagi 👋</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block" id="realtime-clock">Memuat waktu...</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleTheme()" class="p-2 text-gray-400 bg-gray-100 dark:bg-darkBorder rounded-full">
+                            <i class="ph ph-moon text-lg dark:hidden"></i>
+                            <i class="ph ph-sun text-lg hidden dark:block"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Scrollable Area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none p-4 sm:p-6 lg:p-8">
+                
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-dashboard" class="space-y-6 animate-fade-in">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        <div class="bg-white dark:bg-darkCard overflow-hidden rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 rounded-lg p-3">
+                                    <i class="ph ph-files text-2xl text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Data</dt>
+                                        <dd class="text-2xl font-bold text-gray-900 dark:text-white" id="stat-total">0</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-darkCard overflow-hidden rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg p-3">
+                                    <i class="ph ph-check-circle text-2xl text-emerald-600 dark:text-emerald-400"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Sudah Upload</dt>
+                                        <dd class="flex items-baseline">
+                                            <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stat-uploaded">0</div>
+                                            <span class="ml-2 text-sm font-medium text-emerald-600 dark:text-emerald-400" id="stat-uploaded-perc">0%</span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-darkCard overflow-hidden rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-amber-100 dark:bg-amber-900/30 rounded-lg p-3">
+                                    <i class="ph ph-hourglass-high text-2xl text-amber-600 dark:text-amber-400"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</dt>
+                                        <dd class="text-2xl font-bold text-gray-900 dark:text-white" id="stat-pending">0</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Area -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-5">
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Status Upload Progress</h3>
+                            <div class="relative h-64 w-full flex justify-center">
+                                <canvas id="chartStatus"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary to-accent rounded-xl shadow-sm p-6 text-white flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+                            <div class="relative z-10">
+                                <h3 class="text-2xl font-bold mb-2">Setup Database</h3>
+                                <p class="text-blue-100 mb-6 text-sm">Jika ini pertama kali aplikasi dijalankan, pastikan struktur database di Spreadsheet sudah siap.</p>
+                                <button onclick="runSetupDatabase()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-50 focus:outline-none shadow-sm">
+                                    <i class="ph ph-database mr-2"></i> Jalankan Setup Otomatis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DATA TABLE -->
+                <div id="view-data" class="hidden space-y-4 animate-fade-in">
+                    <!-- Toolbar -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-darkCard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder">
+                        <div class="relative w-full sm:w-72">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ph ph-magnifying-glass text-gray-400"></i>
+                            </div>
+                            <input type="text" id="searchInput" onkeyup="filterTable()" class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-gray-50 dark:bg-darkBg dark:text-white" placeholder="Cari ID atau Nama...">
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <select id="filterStatus" onchange="filterTable()" class="block w-full sm:w-auto pl-3 pr-10 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                                <option value="all">Semua Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Uploaded">Uploaded</option>
+                            </select>
+                            <button onclick="loadData()" class="p-2 text-gray-500 bg-gray-100 dark:bg-darkBorder rounded-lg">
+                                <i class="ph ph-arrows-clockwise text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-darkBorder" id="dataTable">
+                                <thead class="bg-gray-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID Data</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Informasi</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal Update</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-darkCard divide-y divide-gray-200 dark:divide-darkBorder" id="tableBody">
+                                    <!-- Rows JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="pagination-container" class="px-6 py-4 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-darkBorder flex items-center justify-between">
+                            <div class="text-sm text-gray-500 dark:text-gray-400" id="pagination-info">Menampilkan 0 data</div>
+                            <div class="flex items-center space-x-2" id="pagination-buttons"></div>
+                        </div>
+
+                        <div id="empty-state" class="hidden py-12 text-center">
+                            <i class="ph ph-folder-dashed text-5xl text-gray-400 mb-4 block"></i>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Tidak ada data</h3>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- UPLOAD MODAL -->
+    <div id="upload-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/75 dark:bg-gray-900/90 backdrop-blur-sm" onclick="closeModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white dark:bg-darkCard rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-100 dark:border-darkBorder">
+                <div class="px-6 pt-5 pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="ph ph-upload-simple text-primary text-xl"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Upload Foto Dokumentasi</h3>
+                            <div class="mt-1">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">ID: <span id="modal-record-id" class="font-bold text-gray-700 dark:text-gray-300"></span></p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate w-64" id="modal-record-name"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-darkBorder border-dashed rounded-xl hover:border-primary bg-gray-50 dark:bg-darkBg/50 relative group cursor-pointer" onclick="document.getElementById('file-upload').click()">
+                            <div class="space-y-1 text-center" id="upload-placeholder">
+                                <i class="ph ph-image text-4xl text-gray-400 group-hover:text-primary mx-auto mb-2 block"></i>
+                                <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
+                                    <label for="file-upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary hover:text-blue-500">
+                                        <span>Pilih file foto</span>
+                                        <input id="file-upload" type="file" accept="image/*" class="sr-only" onchange="previewImage(this)">
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500">Maksimal 5MB</p>
+                            </div>
+                            
+                            <div id="image-preview-container" class="hidden absolute inset-0 rounded-xl overflow-hidden bg-black/5 flex items-center justify-center p-2">
+                                <img id="image-preview" class="max-h-full max-w-full object-contain rounded-lg">
+                                <button type="button" class="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600" onclick="event.stopPropagation(); removeImagePreview()">
+                                    <i class="ph ph-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 flex flex-row-reverse rounded-b-2xl">
+                    <button type="button" id="btn-submit-upload" onclick="submitUpload()" class="w-full inline-flex justify-center rounded-lg shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                        <i class="ph ph-cloud-arrow-up mr-2 text-lg"></i> Upload
+                    </button>
+                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Batal
+                    </button>
+                </div>
+                
+                <input type="hidden" id="modal-row-idx">
+                <input type="hidden" id="base64-data">
+                <input type="hidden" id="mime-type">
+                <input type="hidden" id="file-name">
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE LOGIC & API ENGINE -->
+    <script>
+        // ---------------------------------------------------------
+        // KONFIGURASI DUAL-MODE ENGINE & API GATEWAY
+        // ---------------------------------------------------------
+        const IS_PREVIEW = false; // Set FALSE jika ingin menghubungkan ke Google Apps Script (Production)
+        const GAS_URL    = "https://script.google.com/macros/s/AKfycbzecc7q1y2R4AVcQnIBTlHeYmlnHuc-0sQIqml1nQzDMqrgaVhNO95pfpKv6s7YS4l1Ag/exec"; // Masukkan URL Web App GAS hasil deploy di sini
+
+        async function apiCall(action, payload = {}) {
+            if (IS_PREVIEW) {
+                return await handleMockAPI(action, payload);
+            }
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action, payload })
+                });
+                return await res.json();
+            } catch (err) {
+                return { status: "error", message: "Koneksi GAS Gagal: " + err.message };
+            }
+        }
+
+        // MOCK DATABASE MENGGUNAKAN LOCAL STORAGE (Untuk Preview Interaktif)
+        async function handleMockAPI(action, payload) {
+            await new Promise(r => setTimeout(r, 800)); // Delay simulasi jaringan
+            
+            if (action === 'login') {
+                if (payload.username === 'admin' && payload.password === 'admin123') {
+                    return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama (Mock)' } };
+                }
+                return { status: 'error', message: 'Username atau Password salah!' };
+            }
+            
+            if (action === 'getAll') {
+                let mockRecords = JSON.parse(localStorage.getItem('mock_records'));
+                if (!mockRecords) {
+                    mockRecords = Array.from({length: 15}).map((_, i) => ({
+                        rowIdx: i + 2, id: `DT-00${15-i}`, nama: `Dokumentasi Proyek ${String.fromCharCode(65 + i)}`, keterangan: 'Mock keterangan data ' + i,
+                        status: i < 10 ? 'Uploaded' : 'Pending', url: i < 10 ? 'https://via.placeholder.com/150' : '', tanggal: i < 10 ? '12 Sep 2026 10:00' : ''
+                    }));
+                    localStorage.setItem('mock_records', JSON.stringify(mockRecords));
+                }
+                let uploaded = mockRecords.filter(r => r.status === 'Uploaded').length;
+                let pending = mockRecords.length - uploaded;
+                return { status: 'success', message: 'OK', data: { stats: { total: mockRecords.length, uploaded, pending }, records: mockRecords } };
+            }
+            
+            if (action === 'upload') {
+                let mockRecords = JSON.parse(localStorage.getItem('mock_records')) || [];
+                let record = mockRecords.find(r => r.id === payload.recordId);
+                if (record) {
+                    record.status = 'Uploaded';
+                    record.url = payload.fileData; // Simpan base64 langsung untuk preview
+                    record.tanggal = new Date().toLocaleString('id-ID');
+                    localStorage.setItem('mock_records', JSON.stringify(mockRecords));
+                }
+                return { status: 'success', message: 'Mock Upload Berhasil!', data: { url: payload.fileData } };
+            }
+
+            if (action === 'setup') {
+                return { status: 'success', message: 'Database Mock berhasil disetup!', data: {} };
+            }
+        }
+
+        // ---------------------------------------------------------
+        // STATE & UI LOGIC
+        // ---------------------------------------------------------
+        let currentPage = 1, rowsPerPage = 10, filteredCacheData = [];
+        let appState = { user: null, data: [], stats: { total: 0, uploaded: 0, pending: 0 }, chartInstance: null };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateClock();
+            setInterval(updateClock, 60000);
+            
+            if (IS_PREVIEW) document.getElementById('mock-badge').classList.remove('hidden');
+            
+            // Session Check
+            const session = localStorage.getItem('user_session');
+            if (session) {
+                appState.user = JSON.parse(session);
+                showMainApp();
+            }
+        });
+
+        function showLoading(text = 'Memproses...') {
+            document.getElementById('loading-text').innerText = text;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('flex');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+                error: 'bg-red-50 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+                info: 'bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
+            };
+            const icons = { success: 'ph-check-circle', error: 'ph-warning-circle', info: 'ph-info' };
+            toast.className = `toast-enter flex items-center p-4 border rounded-lg shadow-lg ${colors[type]} glass max-w-xs`;
+            toast.innerHTML = `<i class="ph ${icons[type]} text-xl mr-3"></i><div class="text-sm font-medium">${message}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else { document.documentElement.classList.remove('dark'); }
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            if(appState.chartInstance) updateChartTheme();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('realtime-clock').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            if(appState.user) {
+                const hour = now.getHours();
+                let greeting = hour < 11 ? 'Selamat Pagi' : hour < 15 ? 'Selamat Siang' : hour < 18 ? 'Selamat Sore' : 'Selamat Malam';
+                document.getElementById('greeting-text').innerHTML = `${greeting}, <span class="text-primary">${appState.user.name.split(' ')[0]}</span> 👋`;
+            }
+        }
+
+        // --- AUTH & NAV --- //
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const payload = { username: document.getElementById('username').value, password: document.getElementById('password').value };
+            showLoading('Mengecek kredensial...');
+            
+            const res = await apiCall('login', payload);
+            hideLoading();
+            
+            if (res.status === 'success') {
+                appState.user = res.data;
+                localStorage.setItem('user_session', JSON.stringify(appState.user));
+                showMainApp();
+                showToast('Login berhasil!');
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('user_session');
+            appState.user = null;
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            showToast('Anda telah logout', 'info');
+        }
+
+        function showMainApp() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('sidebar-name').textContent = appState.user.name;
+            document.getElementById('sidebar-role').textContent = appState.user.role;
+            document.getElementById('user-initial').textContent = appState.user.name.charAt(0).toUpperCase();
+            updateClock();
+            switchMenu('dashboard');
+        }
+
+        function switchMenu(menuId) {
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('bg-blue-50', 'dark:bg-primary/10', 'text-primary');
+                el.classList.add('text-gray-600', 'dark:text-gray-300');
+            });
+            const activeMenu = document.getElementById(`menu-${menuId}`);
+            if(activeMenu) {
+                activeMenu.classList.add('bg-blue-50', 'dark:bg-primary/10', 'text-primary');
+                activeMenu.classList.remove('text-gray-600', 'dark:text-gray-300');
+            }
+
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-data').classList.add('hidden');
+            document.getElementById(`view-${menuId}`).classList.remove('hidden');
+            if (menuId === 'dashboard' || menuId === 'data') loadData();
+        }
+
+        // --- DATA LOGIC --- //
+        async function loadData() {
+            showLoading('Memuat data terbaru...');
+            const res = await apiCall('getAll');
+            hideLoading();
+            
+            if(res.status === 'success') {
+                appState.data = res.data.records;
+                appState.stats = res.data.stats;
+                
+                document.getElementById('stat-total').textContent = appState.stats.total;
+                document.getElementById('stat-uploaded').textContent = appState.stats.uploaded;
+                document.getElementById('stat-pending').textContent = appState.stats.pending;
+                let perc = appState.stats.total > 0 ? Math.round((appState.stats.uploaded / appState.stats.total) * 100) : 0;
+                document.getElementById('stat-uploaded-perc').textContent = `${perc}%`;
+
+                renderChart();
+                renderTable();
+            } else {
+                showToast(res.message, 'error');
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            
+            filteredCacheData = appState.data.filter(item => {
+                const matchSearch = String(item.id||'').toLowerCase().includes(search) || String(item.nama||'').toLowerCase().includes(search);
+                const matchStatus = statusFilter === 'all' || item.status === statusFilter;
+                return matchSearch && matchStatus;
+            });
+
+            if (filteredCacheData.length === 0) {
+                tbody.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('dataTable').classList.add('hidden');
+                document.getElementById('pagination-container').classList.add('hidden');
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+                document.getElementById('dataTable').classList.remove('hidden');
+                document.getElementById('pagination-container').classList.remove('hidden');
+
+                const totalPages = Math.ceil(filteredCacheData.length / rowsPerPage);
+                if (currentPage > totalPages) currentPage = 1;
+                const paginatedData = filteredCacheData.slice((currentPage - 1) * rowsPerPage, (currentPage * rowsPerPage));
+
+                tbody.innerHTML = paginatedData.map(item => `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">${item.id}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                            <div class="font-medium text-gray-900 dark:text-white">${item.nama}</div>
+                            <div class="text-xs text-gray-400 mt-0.5 truncate w-48">${item.keterangan}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            ${item.status === 'Uploaded' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">Sudah (ada)</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">Pending</span>'}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">${item.tanggal || '-'}</td>
+                        <td class="px-6 py-4 text-right text-sm font-medium">
+                            ${item.status === 'Uploaded' ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md">Lihat File</a>` : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm">Upload</button>`}
+                        </td>
+                    </tr>
+                `).join('');
+                
+                renderPagination(totalPages);
+            }
+        }
+
+        function renderPagination(totalPages) {
+            const startItem = filteredCacheData.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0;
+            const endItem = Math.min(currentPage * rowsPerPage, filteredCacheData.length);
+            document.getElementById('pagination-info').textContent = `Menampilkan ${startItem}-${endItem} dari ${filteredCacheData.length} data`;
+
+            let btns = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1 text-xs border rounded bg-white dark:bg-darkCard dark:border-darkBorder disabled:opacity-40">Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                btns += `<button onclick="changePage(${i})" class="px-3 py-1 text-xs border rounded ${i === currentPage ? 'bg-primary text-white' : 'bg-white dark:bg-darkCard dark:border-darkBorder'}">${i}</button>`;
+            }
+            btns += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1 text-xs border rounded bg-white dark:bg-darkCard dark:border-darkBorder disabled:opacity-40">Next</button>`;
+            document.getElementById('pagination-buttons').innerHTML = btns;
+        }
+
+        function changePage(page) { currentPage = page; renderTable(); }
+        function filterTable() { currentPage = 1; renderTable(); }
+
+        // --- CHART & MODAL --- //
+        function renderChart() {
+            const ctx = document.getElementById('chartStatus').getContext('2d');
+            if (appState.chartInstance) appState.chartInstance.destroy();
+            appState.chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Uploaded', 'Pending'],
+                    datasets: [{ data: [appState.stats.uploaded, appState.stats.pending], backgroundColor: ['#10B981', '#F59E0B'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569' } } } }
+            });
+        }
+        function updateChartTheme() {
+            if(appState.chartInstance){
+                appState.chartInstance.options.plugins.legend.labels.color = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569';
+                appState.chartInstance.update();
+            }
+        }
+
+        function openUploadModal(id, nama, rowIdx) {
+            document.getElementById('modal-record-id').textContent = id;
+            document.getElementById('modal-record-name').textContent = nama;
+            document.getElementById('modal-row-idx').value = rowIdx;
+            removeImagePreview();
+            document.getElementById('upload-modal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('upload-modal').classList.add('hidden'); }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if(file.size > 5 * 1024 * 1024) { showToast('Ukuran maksimal 5MB', 'error'); input.value = ''; return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('base64-data').value = e.target.result;
+                    document.getElementById('mime-type').value = file.type;
+                    document.getElementById('file-name').value = `${document.getElementById('modal-record-id').textContent}_${new Date().getTime()}.${file.name.split('.').pop()}`;
+                    document.getElementById('btn-submit-upload').disabled = false;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        function removeImagePreview() {
+            document.getElementById('file-upload').value = ''; document.getElementById('base64-data').value = '';
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('btn-submit-upload').disabled = true;
+        }
+
+        async function submitUpload() {
+            const payload = {
+                rowIdx: document.getElementById('modal-row-idx').value, recordId: document.getElementById('modal-record-id').textContent,
+                fileData: document.getElementById('base64-data').value, mimeType: document.getElementById('mime-type').value, fileName: document.getElementById('file-name').value
+            };
+            if(!payload.fileData) return showToast('Pilih foto!', 'error');
+            closeModal();
+            showLoading('Mengupload ke Server...');
+            const res = await apiCall('upload', payload);
+            hideLoading();
+            if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+        }
+
+        async function runSetupDatabase() {
+            showLoading('Membangun struktur Database...');
+            const res = await apiCall('setup');
+            hideLoading();
+            if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+        }
+    </script>
+</body>
+</html>
