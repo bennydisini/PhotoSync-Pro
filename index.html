@@ -95,10 +95,66 @@
                     Masuk ke Dashboard
                 </button>
             </form>
+            
+            <!-- TAMBAHAN: Tombol Akses Dashboard Publik -->
+            <div class="mt-6 text-center border-t border-gray-200 dark:border-darkBorder pt-6">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Hanya ingin melihat progress?</p>
+                <button onclick="openPublicDashboard()" class="text-primary hover:text-blue-700 dark:hover:text-blue-400 text-sm font-medium inline-flex items-center transition-colors">
+                    <i class="ph ph-chart-bar mr-1.5 text-lg"></i> Lihat Dashboard Publik
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT -->
+    <!-- TAMBAHAN: HALAMAN DASHBOARD PUBLIK -->
+    <div id="public-dashboard-page" class="hidden min-h-screen bg-gray-50 dark:bg-darkBg p-4 sm:p-8 animate-fade-in">
+        <div class="max-w-5xl mx-auto">
+            <!-- Header Publik -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white inline-flex items-center">
+                        <i class="ph ph-projector-screen-chart text-primary mr-3 text-3xl"></i> Dashboard Progres Kampung
+                    </h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Rekapitulasi total data upload per kampung (Live)</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleTheme()" class="p-2 text-gray-400 bg-gray-200 dark:bg-darkBorder rounded-full hover:bg-gray-300 transition-colors">
+                        <i class="ph ph-moon text-lg dark:hidden"></i>
+                        <i class="ph ph-sun text-lg hidden dark:block"></i>
+                    </button>
+                    <button onclick="closePublicDashboard()" class="inline-flex items-center px-4 py-2 bg-white dark:bg-darkCard border border-gray-300 dark:border-darkBorder text-gray-700 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                        <i class="ph ph-arrow-left mr-2"></i> Kembali Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabel Progress Publik -->
+            <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-darkBorder">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama Kampung</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Data</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-500 uppercase tracking-wider">Selesai</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-amber-600 dark:text-amber-500 uppercase tracking-wider">Pending</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Progress Selesai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="publicTableBody" class="bg-white dark:bg-darkCard divide-y divide-gray-200 dark:divide-darkBorder">
+                            <!-- Injeksi JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="public-empty-state" class="hidden py-12 text-center">
+                    <i class="ph ph-chart-line-down text-5xl text-gray-400 mb-4 block"></i>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Belum ada rekap data</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP LAYOUT (Tidak ada perubahan struktur di sini) -->
     <div id="main-app" class="hidden h-screen flex overflow-hidden">
         
         <!-- Sidebar Desktop -->
@@ -460,6 +516,15 @@
         async function handleMockAPI(action, payload) {
             await new Promise(r => setTimeout(r, 800)); // Delay simulasi jaringan
             
+            // TAMBAHAN MOCK: getPublicStats
+            if (action === 'getPublicStats') {
+                return { status: 'success', data: [
+                    { kampung: 'Sukamaju', total: 120, selesai: 90, pending: 30 },
+                    { kampung: 'Sukatani', total: 85, selesai: 85, pending: 0 },
+                    { kampung: 'Karanganyar', total: 50, selesai: 10, pending: 40 }
+                ]};
+            }
+            
             if (action === 'login') {
                 if (payload.username === 'admin' && payload.password === 'admin123') {
                     return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama', kampung: '' } };
@@ -616,7 +681,61 @@
             appState.user = null;
             document.getElementById('login-page').classList.remove('hidden');
             document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('public-dashboard-page').classList.add('hidden'); // Tutup juga halaman publik
             showToast('Anda telah logout', 'info');
+        }
+
+        // --- TAMBAHAN LOGIKA DASHBOARD PUBLIK --- //
+        function openPublicDashboard() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('public-dashboard-page').classList.remove('hidden');
+            loadPublicStats();
+        }
+
+        function closePublicDashboard() {
+            document.getElementById('public-dashboard-page').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+        }
+
+        async function loadPublicStats() {
+            showLoading('Memuat Rekap Progress...');
+            const res = await apiCall('getPublicStats');
+            hideLoading();
+            
+            const tbody = document.getElementById('publicTableBody');
+            const emptyState = document.getElementById('public-empty-state');
+            
+            if (res.status === 'success') {
+                if (res.data.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                    tbody.innerHTML = res.data.map(item => {
+                        let perc = item.total > 0 ? Math.round((item.selesai / item.total) * 100) : 0;
+                        let barColor = perc === 100 ? 'bg-emerald-500' : 'bg-primary'; // Hijau jika tuntas
+                        
+                        return `
+                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">${item.kampung}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">${item.total}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-emerald-600 dark:text-emerald-400">${item.selesai}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-amber-600 dark:text-amber-400">${item.pending}</td>
+                                <td class="px-6 py-4 whitespace-nowrap w-64">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                                            <div class="${barColor} h-2.5 rounded-full transition-all duration-500" style="width: ${perc}%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300 w-8 text-right">${perc}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } else {
+                showToast(res.message, 'error');
+            }
         }
 
         function showMainApp() {
