@@ -493,12 +493,19 @@
         // KONFIGURASI DUAL-MODE ENGINE & API GATEWAY
         // ---------------------------------------------------------
         const IS_PREVIEW = false; // Set FALSE jika ingin menghubungkan ke Google Apps Script (Production)
-        const GAS_URL    = "https://script.google.com/macros/s/AKfycbwctbSgiI5_ETpkNGJB0q5XQ2iuuXK6nXjY1AcvJgSM0y89zY82KRphdAITvASm7ZHvow/exec"; // Masukkan URL Web App GAS hasil deploy di sini
+        const GAS_URL    = "https://script.google.com/macros/s/AKfycbzecc7q1y2R4AVcQnIBTlHeYmlnHuc-0sQIqml1nQzDMqrgaVhNO95pfpKv6s7YS4l1Ag/exec"; // Masukkan URL Web App GAS hasil deploy di sini
 
         async function apiCall(action, payload = {}) {
             if (IS_PREVIEW) {
                 return await handleMockAPI(action, payload);
             }
+            
+            // INJEKSI SESSION: Otomatis kirim identitas sesi ke backend untuk validasi (kecuali aksi terbuka)
+            if (appState.user && !['login', 'setup', 'getPublicStats'].includes(action)) {
+                payload.sessionUsername = appState.user.username;
+                payload.sessionToken = appState.user.token;
+            }
+
             try {
                 const res = await fetch(GAS_URL, {
                     method: "POST",
@@ -506,7 +513,16 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ action, payload })
                 });
-                return await res.json();
+                const result = await res.json();
+                
+                // TANGKAP PENOLAKAN KARENA MULTI-DEVICE LOGIN
+                if (result.status === 'session_expired') {
+                    showToast(result.message, 'error');
+                    forceLogout(); // Paksa logout
+                    return result;
+                }
+
+                return result;
             } catch (err) {
                 return { status: "error", message: "Koneksi GAS Gagal: " + err.message };
             }
@@ -516,20 +532,21 @@
         async function handleMockAPI(action, payload) {
             await new Promise(r => setTimeout(r, 800)); // Delay simulasi jaringan
             
-            // TAMBAHAN MOCK: getPublicStats
-            if (action === 'getPublicStats') {
-                return { status: 'success', data: [
-                    { kampung: 'Sukamaju', total: 120, selesai: 90, pending: 30 },
-                    { kampung: 'Sukatani', total: 85, selesai: 85, pending: 0 },
-                    { kampung: 'Karanganyar', total: 50, selesai: 10, pending: 40 }
-                ]};
+            // MOCK VALIDASI SESI (Simulasi Single Device)
+            if (appState.user && !['login', 'setup', 'getPublicStats'].includes(action)) {
+                const activeToken = localStorage.getItem('mock_active_token');
+                if (payload.sessionToken !== activeToken) {
+                    showToast('Sesi berakhir karena login di perangkat lain.', 'error');
+                    forceLogout();
+                    return { status: 'session_expired', message: 'Sesi berakhir karena akun Anda telah login di perangkat lain.' };
+                }
             }
-            
+
             if (action === 'login') {
                 if (payload.username === 'admin' && payload.password === 'admin123') {
-                    return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama', kampung: '' } };
-                } else if (payload.username === 'user' && payload.password === 'user123') {
-                    return { status: 'success', message: 'OK', data: { username: 'user', role: 'User', name: 'Petugas Lapangan', kampung: 'Sukamaju' } };
+                    const mockToken = 'mock-token-' + Date.now();
+                    localStorage.setItem('mock_active_token', mockToken);
+                    return { status: 'success', message: 'OK', data: { username: 'admin', role: 'Administrator', name: 'Admin Utama (Mock)', kampung: '', token: mockToken } };
                 }
                 return { status: 'error', message: 'Username atau Password salah!' };
             }
@@ -683,6 +700,15 @@
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('public-dashboard-page').classList.add('hidden'); // Tutup juga halaman publik
             showToast('Anda telah logout', 'info');
+        }
+
+        // FUNGSI PAKSA LOGOUT TANPA NOTIFIKASI MANUAL (UNTUK SESSION EXPIRED)
+        function forceLogout() {
+            localStorage.removeItem('user_session');
+            appState.user = null;
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('public-dashboard-page').classList.add('hidden');
         }
 
         // --- TAMBAHAN LOGIKA DASHBOARD PUBLIK --- //
