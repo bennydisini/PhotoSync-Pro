@@ -136,7 +136,13 @@
                 </div>
                 <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
                     <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg mr-4"><i class="ph ph-check-circle text-xl text-emerald-600 dark:text-emerald-400"></i></div>
-                    <div><p class="text-xs font-medium text-gray-500 dark:text-gray-400">Selesai Keseluruhan</p><p class="text-xl font-bold text-gray-900 dark:text-white" id="pub-sel-all">0</p></div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Selesai Keseluruhan</p>
+                        <div class="flex items-baseline">
+                            <p class="text-xl font-bold text-gray-900 dark:text-white" id="pub-sel-all">0</p>
+                            <span class="ml-2 text-sm font-medium text-emerald-600 dark:text-emerald-400" id="pub-sel-perc">0%</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
                     <div class="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-lg mr-4"><i class="ph ph-hourglass-high text-xl text-amber-600 dark:text-amber-400"></i></div>
@@ -509,7 +515,7 @@
         // KONFIGURASI DUAL-MODE ENGINE & API GATEWAY
         // ---------------------------------------------------------
         const IS_PREVIEW = false; // Set FALSE jika ingin menghubungkan ke Google Apps Script (Production)
-        const GAS_URL    = "https://script.google.com/macros/s/AKfycbzYFU2NxWyTLHq-zgPtu4zJeluqtdSL9yNrfabsdpcjxQzS6qV4ulexxEQPmb0sl8s1qA/exec"; // Masukkan URL Web App GAS hasil deploy di sini
+        const GAS_URL    = "https://script.google.com/macros/s/AKfycbzecc7q1y2R4AVcQnIBTlHeYmlnHuc-0sQIqml1nQzDMqrgaVhNO95pfpKv6s7YS4l1Ag/exec"; // Masukkan URL Web App GAS hasil deploy di sini
 
         async function apiCall(action, payload = {}) {
             if (IS_PREVIEW) {
@@ -786,15 +792,20 @@
                         `;
                     }).join('');
                     
+                    // Kalkulasi persentase keseluruhan
+                    let grandPerc = grandTotal > 0 ? Math.round((grandSelesai / grandTotal) * 100) : 0;
+                    
                     // Update Angka di Kartu Summary Publik
                     document.getElementById('pub-tot-all').innerText = grandTotal;
                     document.getElementById('pub-sel-all').innerText = grandSelesai;
+                    document.getElementById('pub-sel-perc').innerText = `${grandPerc}%`;
                     document.getElementById('pub-pen-all').innerText = grandPending;
                 }
             } else {
                 showToast(res.message, 'error');
             }
         }
+        
         function showMainApp() {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
