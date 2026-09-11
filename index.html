@@ -128,6 +128,22 @@
                 </div>
             </div>
 
+            <!-- TAMBAHAN: Summary Cards Publik -->
+            <div id="public-summary-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 hidden">
+                <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
+                    <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg mr-4"><i class="ph ph-files text-xl text-blue-600 dark:text-blue-400"></i></div>
+                    <div><p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Keseluruhan</p><p class="text-xl font-bold text-gray-900 dark:text-white" id="pub-tot-all">0</p></div>
+                </div>
+                <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
+                    <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg mr-4"><i class="ph ph-check-circle text-xl text-emerald-600 dark:text-emerald-400"></i></div>
+                    <div><p class="text-xs font-medium text-gray-500 dark:text-gray-400">Selesai Keseluruhan</p><p class="text-xl font-bold text-gray-900 dark:text-white" id="pub-sel-all">0</p></div>
+                </div>
+                <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
+                    <div class="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-lg mr-4"><i class="ph ph-hourglass-high text-xl text-amber-600 dark:text-amber-400"></i></div>
+                    <div><p class="text-xs font-medium text-gray-500 dark:text-gray-400">Pending Keseluruhan</p><p class="text-xl font-bold text-gray-900 dark:text-white" id="pub-pen-all">0</p></div>
+                </div>
+            </div>
+
             <!-- Tabel Progress Publik -->
             <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder overflow-hidden">
                 <div class="overflow-x-auto">
@@ -730,14 +746,25 @@
             
             const tbody = document.getElementById('publicTableBody');
             const emptyState = document.getElementById('public-empty-state');
+            const summaryCards = document.getElementById('public-summary-cards');
             
             if (res.status === 'success') {
                 if (res.data.length === 0) {
                     tbody.innerHTML = '';
                     emptyState.classList.remove('hidden');
+                    if (summaryCards) summaryCards.classList.add('hidden');
                 } else {
                     emptyState.classList.add('hidden');
+                    if (summaryCards) summaryCards.classList.remove('hidden');
+                    
+                    // Kalkulasi Total Keseluruhan
+                    let grandTotal = 0, grandSelesai = 0, grandPending = 0;
+
                     tbody.innerHTML = res.data.map(item => {
+                        grandTotal += item.total;
+                        grandSelesai += item.selesai;
+                        grandPending += item.pending;
+
                         let perc = item.total > 0 ? Math.round((item.selesai / item.total) * 100) : 0;
                         let barColor = perc === 100 ? 'bg-emerald-500' : 'bg-primary'; // Hijau jika tuntas
                         
@@ -758,12 +785,16 @@
                             </tr>
                         `;
                     }).join('');
+                    
+                    // Update Angka di Kartu Summary Publik
+                    document.getElementById('pub-tot-all').innerText = grandTotal;
+                    document.getElementById('pub-sel-all').innerText = grandSelesai;
+                    document.getElementById('pub-pen-all').innerText = grandPending;
                 }
             } else {
                 showToast(res.message, 'error');
             }
         }
-
         function showMainApp() {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
