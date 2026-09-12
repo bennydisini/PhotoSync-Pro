@@ -31,6 +31,7 @@
             }
         }
     </script>
+    
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -96,7 +97,6 @@
                 </button>
             </form>
             
-            <!-- TAMBAHAN: Tombol Akses Dashboard Publik -->
             <div class="mt-6 text-center border-t border-gray-200 dark:border-darkBorder pt-6">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Hanya ingin melihat progress?</p>
                 <button onclick="openPublicDashboard()" class="text-primary hover:text-blue-700 dark:hover:text-blue-400 text-sm font-medium inline-flex items-center transition-colors">
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <!-- TAMBAHAN: HALAMAN DASHBOARD PUBLIK -->
+    <!-- HALAMAN DASHBOARD PUBLIK -->
     <div id="public-dashboard-page" class="hidden min-h-screen bg-gray-50 dark:bg-darkBg p-4 sm:p-8 animate-fade-in">
         <div class="max-w-5xl mx-auto">
             <!-- Header Publik -->
@@ -128,7 +128,7 @@
                 </div>
             </div>
 
-            <!-- TAMBAHAN: Summary Cards Publik -->
+            <!-- Summary Cards Publik -->
             <div id="public-summary-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 hidden">
                 <div class="bg-white dark:bg-darkCard rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder p-4 flex items-center">
                     <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg mr-4"><i class="ph ph-files text-xl text-blue-600 dark:text-blue-400"></i></div>
@@ -176,7 +176,7 @@
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT (Tidak ada perubahan struktur di sini) -->
+    <!-- MAIN APP LAYOUT -->
     <div id="main-app" class="hidden h-screen flex overflow-hidden">
         
         <!-- Sidebar Desktop -->
@@ -194,7 +194,6 @@
                     <a href="#" onclick="switchMenu('data')" id="menu-data" class="menu-item text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-darkBorder/50 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
                         <i class="ph ph-database mr-3 text-lg group-hover:text-primary"></i> Data Upload
                     </a>
-                    <!-- TAMBAHAN: Menu Manajemen User -->
                     <a href="#" onclick="switchMenu('users')" id="menu-users" class="hidden menu-item text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-darkBorder/50 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg">
                         <i class="ph ph-users mr-3 text-lg group-hover:text-primary"></i> Manajemen User
                     </a>
@@ -308,7 +307,7 @@
                             <div class="relative z-10">
                                 <h3 class="text-2xl font-bold mb-2">Setup Database</h3>
                                 <p class="text-blue-100 mb-6 text-sm">Jika ini pertama kali aplikasi dijalankan, pastikan struktur database di Spreadsheet sudah siap.</p>
-                                <button onclick="runSetupDatabase()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-50 focus:outline-none shadow-sm">
+                                <button onclick="runSetupDatabase()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-white hover:bg-gray-50 focus:outline-none shadow-sm transition-colors">
                                     <i class="ph ph-database mr-2"></i> Jalankan Setup Otomatis
                                 </button>
                             </div>
@@ -324,7 +323,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="ph ph-magnifying-glass text-gray-400"></i>
                             </div>
-                            <input type="text" id="searchInput" onkeyup="filterTable()" class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-gray-50 dark:bg-darkBg dark:text-white" placeholder="Cari ID atau Nama...">
+                            <input type="text" id="searchInput" onkeyup="filterTable()" class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-darkBorder rounded-lg sm:text-sm bg-gray-50 dark:bg-darkBg dark:text-white focus:ring-primary focus:border-primary transition-colors" placeholder="Cari ID atau Nama...">
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <select id="filterStatus" onchange="filterTable()" class="block w-full sm:w-auto pl-3 pr-10 py-2 border border-gray-200 dark:border-darkBorder rounded-lg focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
@@ -372,7 +371,7 @@
                     </div>
                 </div>
 
-                <!-- TAMBAHAN VIEW: MANAJEMEN USER -->
+                <!-- VIEW: MANAJEMEN USER -->
                 <div id="view-users" class="hidden space-y-4 animate-fade-in">
                     <div class="flex justify-between items-center gap-4 bg-white dark:bg-darkCard p-4 rounded-xl shadow-sm border border-gray-100 dark:border-darkBorder">
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Data Pengguna</h2>
@@ -402,66 +401,7 @@
         </div>
     </div>
 
-    <!-- UPLOAD MODAL 
-    <div id="upload-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-900/75 dark:bg-gray-900/90 backdrop-blur-sm" onclick="closeModal()"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div class="inline-block align-bottom bg-white dark:bg-darkCard rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-100 dark:border-darkBorder">
-                <div class="px-6 pt-5 pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="ph ph-upload-simple text-primary text-xl"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Upload Foto Dokumentasi</h3>
-                            <div class="mt-1">
-                                <p class="text-sm text-gray-500 dark:text-gray-400">ID: <span id="modal-record-id" class="font-bold text-gray-700 dark:text-gray-300"></span></p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate w-64" id="modal-record-name"></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-darkBorder border-dashed rounded-xl hover:border-primary bg-gray-50 dark:bg-darkBg/50 relative group cursor-pointer" onclick="document.getElementById('file-upload').click()">
-                            <div class="space-y-1 text-center" id="upload-placeholder">
-                                <i class="ph ph-image text-4xl text-gray-400 group-hover:text-primary mx-auto mb-2 block"></i>
-                                <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-                                    <label for="file-upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary hover:text-blue-500">
-                                        <span>Pilih file foto</span>
-                                        <input id="file-upload" type="file" accept="image/*" class="sr-only" onchange="previewImage(this)">
-                                    </label>
-                                </div>
-                                <p class="text-xs text-gray-500">Maksimal 5MB</p>
-                            </div>
-                            
-                            <div id="image-preview-container" class="hidden absolute inset-0 rounded-xl overflow-hidden bg-black/5 flex items-center justify-center p-2">
-                                <img id="image-preview" class="max-h-full max-w-full object-contain rounded-lg">
-                                <button type="button" class="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600" onclick="event.stopPropagation(); removeImagePreview()">
-                                    <i class="ph ph-x"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 flex flex-row-reverse rounded-b-2xl">
-                    <button type="button" id="btn-submit-upload" onclick="submitUpload()" class="w-full inline-flex justify-center rounded-lg shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
-                        <i class="ph ph-cloud-arrow-up mr-2 text-lg"></i> Upload
-                    </button>
-                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Batal
-                    </button>
-                </div>
-                
-                <input type="hidden" id="modal-row-idx">
-                <input type="hidden" id="base64-data">
-                <input type="hidden" id="mime-type">
-                <input type="hidden" id="file-name">
-            </div>
-        </div>
-    </div> -->
-
-     <!-- MODAL LINK UPLOAD PHOTO (TAMBAHAN BARU) -->
+    <!-- MODAL LINK UPLOAD PHOTO -->
     <div id="link-upload-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
         <div class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-100 dark:border-darkBorder animate-fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -504,48 +444,47 @@
             </div>
         </div>
     </div>
-<!-- Tbatas baru -->
     
-    <!-- TAMBAHAN MODAL: MANAJEMEN USER -->
+    <!-- MODAL MANAJEMEN USER -->
     <div id="manage-user-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-900/75 dark:bg-gray-900/90 backdrop-blur-sm" onclick="closeUserModal()"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div class="inline-block align-bottom bg-white dark:bg-darkCard rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-gray-100 dark:border-darkBorder">
+            <div class="inline-block align-bottom bg-white dark:bg-darkCard rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-gray-100 dark:border-darkBorder animate-fade-in">
                 <form onsubmit="submitUser(event)">
                     <div class="px-6 pt-5 pb-4 space-y-4">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="user-modal-title">Tambah User Baru</h3>
                         <input type="hidden" id="form-u-row">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lengkap</label>
-                            <input type="text" id="form-u-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <input type="text" id="form-u-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
-                            <input type="text" id="form-u-user" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <input type="text" id="form-u-user" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                            <input type="text" id="form-u-pass" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <input type="text" id="form-u-pass" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
-                            <select id="form-u-role" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <select id="form-u-role" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                                 <option value="User">User (Akses Terbatas)</option>
                                 <option value="Administrator">Administrator (Akses Penuh)</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Akses Kampung <span class="text-xs font-normal text-gray-400">(Khusus Role User)</span></label>
-                            <input type="text" id="form-u-kampung" placeholder="Contoh: Sukamaju" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white">
+                            <input type="text" id="form-u-kampung" placeholder="Contoh: Sukamaju" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-darkBorder rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm bg-white dark:bg-darkBg dark:text-white transition-colors">
                             <p class="mt-1 text-xs text-gray-500">Teks harus persis dengan isi pada tabel data (Kolom Kampung).</p>
                         </div>
                     </div>
                     <div class="bg-gray-50 dark:bg-slate-800/50 px-6 py-4 flex flex-row-reverse rounded-b-2xl">
-                        <button type="submit" class="w-full inline-flex justify-center rounded-lg shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                             Simpan Data
                         </button>
-                        <button type="button" onclick="closeUserModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button type="button" onclick="closeUserModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                             Batal
                         </button>
                     </div>
@@ -559,9 +498,8 @@
         // ---------------------------------------------------------
         // KONFIGURASI DUAL-MODE ENGINE & API GATEWAY
         // ---------------------------------------------------------
-        const IS_PREVIEW = false; // Set FALSE jika ingin menghubungkan ke Google Apps Script (Production)
-        //const GAS_URL    = "https://script.google.com/macros/s/AKfycbwZzLtCXR61qUSAGWW-Y5TzFs7xGmlUr-sDdxE7Pw-F7lJykAzFwYIYZNb5UC3GDLFQTA/exec"; // Masukkan URL Web App GAS hasil deploy di sini
-        const GAS_URL    = "https://script.google.com/macros/s/AKfycbxx2KYDxK6sR15dPIKP908ICQhvOCuVoe9h6neOpgZ2LLME93FjpyeUNOyMk8Bk1wf8Zw/exec"; // Masukkan URL Web App GAS hasil deploy di sini
+        const IS_PREVIEW = true; // Set FALSE jika ingin menghubungkan ke Google Apps Script (Production)
+        const GAS_URL    = "https://script.google.com/macros/s/AKfycbxx2KYDxK6sR15dPIKP908ICQhvOCuVoe9h6neOpgZ2LLME93FjpyeUNOyMk8Bk1wf8Zw/exec"; // URL Web App GAS
 
         async function apiCall(action, payload = {}) {
             if (IS_PREVIEW) {
@@ -627,7 +565,7 @@
                         kolomE: `Nilai Dusun ${i+1}`, kolomF: i % 2 === 0 ? `Sukamaju` : `Sukatani`, 
                         kolomH: `NIK-${i+1}`, kolomI: `KK-${i+1}`, 
                         keterangan: 'Keterangan observasi',
-                        status: i < 15 ? 'Selesai' : 'Pending', url: i < 15 ? 'https://via.placeholder.com/150' : ''
+                        status: i < 15 ? 'Selesai' : 'Pending', url: 'https://forms.gle/ContohLinkUpload' // Simulasi kolom link pre-filled
                     }));
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
                 }
@@ -638,20 +576,27 @@
                     filtered = mockRecords.filter(r => r.kolomF.toLowerCase() === payload.kampung.toLowerCase());
                 }
 
-                let uploaded = filtered.filter(r => r.status === 'Selesai').length;
+                let uploaded = filtered.filter(r => r.status === 'Selesai' || r.status === 'ADA').length;
                 let pending = filtered.length - uploaded;
-                return { status: 'success', message: 'OK', data: { stats: { total: filtered.length, uploaded, pending }, records: filtered } };
+                return { status: 'success', message: 'OK', records: filtered, stats: { total: filtered.length, uploaded, pending } };
             }
             
-            if (action === 'upload') {
+            if (action === 'markUploadDone') {
                 let mockRecords = JSON.parse(localStorage.getItem('mock_records')) || [];
-                let record = mockRecords.find(r => r.id === payload.recordId);
-                if (record) {
-                    record.status = 'Selesai';
-                    record.url = payload.fileData; 
+                let recordIndex = mockRecords.findIndex(r => r.rowIdx === payload.rowIdx);
+                if (recordIndex !== -1) {
+                    mockRecords[recordIndex].status = 'ADA';
                     localStorage.setItem('mock_records', JSON.stringify(mockRecords));
+                    return { status: 'success', message: 'Status berhasil dikonfirmasi sebagai Selesai (ADA)!' };
                 }
-                return { status: 'success', message: 'Mock Upload Berhasil!', data: { url: payload.fileData } };
+                return { status: 'error', message: 'Data tidak ditemukan!' };
+            }
+
+            if (action === 'getPublicStats') {
+                return { status: 'success', data: [
+                    { kampung: 'Sukamaju', total: 23, selesai: 10, pending: 13 },
+                    { kampung: 'Sukatani', total: 22, selesai: 5, pending: 17 }
+                ]};
             }
 
             if (action === 'setup') {
@@ -674,6 +619,7 @@
         // ---------------------------------------------------------
         let currentPage = 1, rowsPerPage = 10, filteredCacheData = [];
         let appState = { user: null, data: [], stats: { total: 0, uploaded: 0, pending: 0 }, chartInstance: null };
+        let currentLinkUploadRowIdx = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
@@ -689,6 +635,11 @@
                 showMainApp();
             }
         });
+
+        // Utils
+        function escapeQuotes(str) {
+            return String(str || '').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        }
 
         function showLoading(text = 'Memproses...') {
             document.getElementById('loading-text').innerText = text;
@@ -766,11 +717,10 @@
             appState.user = null;
             document.getElementById('login-page').classList.remove('hidden');
             document.getElementById('main-app').classList.add('hidden');
-            document.getElementById('public-dashboard-page').classList.add('hidden'); // Tutup juga halaman publik
+            document.getElementById('public-dashboard-page').classList.add('hidden'); 
             showToast('Anda telah logout', 'info');
         }
 
-        // FUNGSI PAKSA LOGOUT TANPA NOTIFIKASI MANUAL (UNTUK SESSION EXPIRED)
         function forceLogout() {
             localStorage.removeItem('user_session');
             appState.user = null;
@@ -779,7 +729,7 @@
             document.getElementById('public-dashboard-page').classList.add('hidden');
         }
 
-        // --- TAMBAHAN LOGIKA DASHBOARD PUBLIK --- //
+        // --- DASHBOARD PUBLIK --- //
         function openPublicDashboard() {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('public-dashboard-page').classList.remove('hidden');
@@ -809,7 +759,6 @@
                     emptyState.classList.add('hidden');
                     if (summaryCards) summaryCards.classList.remove('hidden');
                     
-                    // Kalkulasi Total Keseluruhan
                     let grandTotal = 0, grandSelesai = 0, grandPending = 0;
 
                     tbody.innerHTML = res.data.map(item => {
@@ -818,10 +767,10 @@
                         grandPending += item.pending;
 
                         let perc = item.total > 0 ? Math.round((item.selesai / item.total) * 100) : 0;
-                        let barColor = perc === 100 ? 'bg-emerald-500' : 'bg-primary'; // Hijau jika tuntas
+                        let barColor = perc === 100 ? 'bg-emerald-500' : 'bg-primary'; 
                         
                         return `
-                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors border-b border-gray-100 dark:border-darkBorder">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">${item.kampung}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">${item.total}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-emerald-600 dark:text-emerald-400">${item.selesai}</td>
@@ -838,10 +787,8 @@
                         `;
                     }).join('');
                     
-                    // Kalkulasi persentase keseluruhan
                     let grandPerc = grandTotal > 0 ? Math.round((grandSelesai / grandTotal) * 100) : 0;
                     
-                    // Update Angka di Kartu Summary Publik
                     document.getElementById('pub-tot-all').innerText = grandTotal;
                     document.getElementById('pub-sel-all').innerText = grandSelesai;
                     document.getElementById('pub-sel-perc').innerText = `${grandPerc}%`;
@@ -859,7 +806,6 @@
             document.getElementById('sidebar-role').textContent = appState.user.role;
             document.getElementById('user-initial').textContent = appState.user.name.charAt(0).toUpperCase();
             
-            // TAMPILKAN MENU MANAJEMEN USER JIKA ADMIN
             if (appState.user.role === 'Administrator') {
                 document.getElementById('menu-users').classList.remove('hidden');
             } else {
@@ -893,12 +839,10 @@
         // --- DATA LOGIC --- //
         async function loadData() {
             showLoading('Memuat data terbaru...');
-            // KIRIM IDENTITAS USER UNTUK FILTER BACKEND
             const res = await apiCall('getAll', { role: appState.user.role, kampung: appState.user.kampung });
             hideLoading();
             
             if(res.status === 'success') {
-                // PERBAIKAN: Membaca res.records dan res.stats langsung dari root object (bukan res.data.records)
                 appState.data = res.records || [];
                 appState.stats = res.stats || { total: 0, uploaded: 0, pending: 0 };
                 
@@ -922,7 +866,10 @@
             
             filteredCacheData = appState.data.filter(item => {
                 const matchSearch = String(item.id||'').toLowerCase().includes(search) || String(item.nama||'').toLowerCase().includes(search);
-                const matchStatus = statusFilter === 'all' || item.status === statusFilter;
+                const isSelesai = item.status === 'Selesai' || item.status === 'ADA';
+                const statusMapped = isSelesai ? 'Selesai' : 'Pending';
+                
+                const matchStatus = statusFilter === 'all' || statusMapped === statusFilter;
                 return matchSearch && matchStatus;
             });
 
@@ -940,25 +887,31 @@
                 if (currentPage > totalPages) currentPage = 1;
                 const paginatedData = filteredCacheData.slice((currentPage - 1) * rowsPerPage, (currentPage * rowsPerPage));
 
-                tbody.innerHTML = paginatedData.map(item => `
+                tbody.innerHTML = paginatedData.map(item => {
+                    const isSelesai = item.status === 'Selesai' || item.status === 'ADA';
+                    const statusBadge = isSelesai 
+                        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Selesai</span>`
+                        : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>`;
+                    
+                    const actionBtn = isSelesai
+                        ? (item.url ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md inline-flex items-center transition-colors"><i class="ph ph-link mr-1"></i> File</a>` : `<span class="text-xs text-gray-500 italic bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-md">Selesai (Tanpa URL)</span>`)
+                        : `<button onclick="openLinkUploadModal(${item.rowIdx}, '${escapeQuotes(item.nama)}', '${escapeQuotes(item.url)}')" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm inline-flex items-center transition-colors"><i class="ph ph-upload-simple mr-1"></i> Upload</button>`;
+
+                    return `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">${item.id}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">${item.id || '-'}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
-                            <div class="font-medium text-gray-900 dark:text-white">${item.nama}</div>
-                            <div class="text-xs text-gray-400 mt-0.5 truncate w-48">${item.keterangan}</div>
+                            <div class="font-medium text-gray-900 dark:text-white">${item.nama || '-'}</div>
+                            <div class="text-xs text-gray-400 mt-0.5 truncate w-48">${item.keterangan || '-'}</div>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomE}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomF}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomH}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomI}</td>
-                        <td class="px-6 py-4 text-sm">
-                            ${item.status === 'Selesai' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"><i class="ph ph-check-circle mr-1"></i> Selesai</span>' : '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800"><i class="ph ph-hourglass-high mr-1"></i> Pending</span>'}
-                        </td>
-                        <td class="px-6 py-4 text-right text-sm font-medium">
-                            ${item.status === 'Selesai' ? (item.url ? `<a href="${item.url}" target="_blank" class="text-primary hover:text-blue-700 bg-blue-50 dark:bg-primary/10 px-3 py-1.5 rounded-md inline-flex items-center"><i class="ph ph-link mr-1"></i> File</a>` : `<span class="text-xs text-gray-500 italic bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-md">Selesai (Tanpa URL)</span>`) : `<button onclick="openUploadModal('${item.id}', '${item.nama}', ${item.rowIdx})" class="text-white bg-primary hover:bg-blue-700 px-3 py-1.5 rounded-md shadow-sm inline-flex items-center"><i class="ph ph-upload-simple mr-1"></i> Upload</button>`}
-                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomE || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomF || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomH || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">${item.kolomI || '-'}</td>
+                        <td class="px-6 py-4 text-sm">${statusBadge}</td>
+                        <td class="px-6 py-4 text-right text-sm font-medium">${actionBtn}</td>
                     </tr>
-                `).join('');
+                `}).join('');
                 
                 renderPagination(totalPages);
             }
@@ -980,12 +933,10 @@
         function changePage(page) { currentPage = page; renderTable(); }
         function filterTable() { currentPage = 1; renderTable(); }
 
-        // --- CHART & MODAL --- //
+        // --- CHART & UPLOAD VIA LINK MODAL --- //
         function renderChart() {
             const ctx = document.getElementById('chartStatus').getContext('2d');
-            const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#e2e8f0' : '#475569';
-
+            
             if (appState.chartInstance) {
                 appState.chartInstance.destroy();
             }
@@ -1003,6 +954,7 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569' } } } }
             });
         }
+        
         function updateChartTheme() {
             if(appState.chartInstance){
                 appState.chartInstance.options.plugins.legend.labels.color = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569';
@@ -1010,62 +962,62 @@
             }
         }
 
-        function openUploadModal(id, nama, rowIdx) {
-            document.getElementById('modal-record-id').textContent = id;
-            document.getElementById('modal-record-name').textContent = nama;
-            document.getElementById('modal-row-idx').value = rowIdx;
-            removeImagePreview();
-            document.getElementById('upload-modal').classList.remove('hidden');
-        }
-        function closeModal() { document.getElementById('upload-modal').classList.add('hidden'); }
-
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                if(file.size > 5 * 1024 * 1024) { showToast('Ukuran maksimal 5MB', 'error'); input.value = ''; return; }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('image-preview').src = e.target.result;
-                    document.getElementById('upload-placeholder').classList.add('hidden');
-                    document.getElementById('image-preview-container').classList.remove('hidden');
-                    document.getElementById('base64-data').value = e.target.result;
-                    document.getElementById('mime-type').value = file.type;
-                    document.getElementById('file-name').value = `${document.getElementById('modal-record-id').textContent}_${new Date().getTime()}.${file.name.split('.').pop()}`;
-                    document.getElementById('btn-submit-upload').disabled = false;
+        function openLinkUploadModal(rowIdx, nama, url) {
+            currentLinkUploadRowIdx = rowIdx;
+            document.getElementById('link-modal-nama').innerText = nama || 'Data Ini';
+            
+            const btnLink = document.getElementById('link-modal-url');
+            const txtEmpty = document.getElementById('link-modal-empty');
+            const btnConfirm = document.getElementById('btn-confirm-link-upload');
+            
+            // Validasi URL (misal ditarik dari Kolom Q di database)
+            if (url && url.trim() !== '' && url.trim() !== 'undefined' && url.trim() !== 'null') {
+                btnLink.href = url.startsWith('http') ? url : 'https://' + url;
+                btnLink.classList.remove('hidden');
+                txtEmpty.classList.add('hidden');
+                btnConfirm.disabled = false;
+                btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnLink.href = '#';
+                btnLink.classList.add('hidden');
+                txtEmpty.classList.remove('hidden');
+                btnConfirm.disabled = true;
+                btnConfirm.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
+            document.getElementById('link-upload-modal').classList.remove('hidden');
+            
+            // Konfirmasi Event
+            btnConfirm.onclick = async () => {
+                const originalText = btnConfirm.innerHTML;
+                btnConfirm.innerHTML = '<i class="ph ph-spinner animate-spin text-lg"></i> Memproses...';
+                btnConfirm.disabled = true;
+                
+                const res = await apiCall('markUploadDone', { rowIdx: currentLinkUploadRowIdx });
+                
+                btnConfirm.innerHTML = originalText;
+                btnConfirm.disabled = false;
+                
+                if (res.status === 'success') {
+                    showToast(res.message, 'success');
+                    closeLinkModal();
+                    loadData(); 
+                } else {
+                    showToast(res.message, 'error');
                 }
-                reader.readAsDataURL(file);
-            }
-        }
-        function removeImagePreview() {
-            document.getElementById('file-upload').value = ''; document.getElementById('base64-data').value = '';
-            document.getElementById('upload-placeholder').classList.remove('hidden');
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('btn-submit-upload').disabled = true;
+            };
         }
 
-        async function submitUpload() {
-            const payload = {
-                rowIdx: document.getElementById('modal-row-idx').value, recordId: document.getElementById('modal-record-id').textContent,
-                fileData: document.getElementById('base64-data').value, mimeType: document.getElementById('mime-type').value, fileName: document.getElementById('file-name').value
-            };
-            
-            // VALIDASI: Pastikan file dokumentasi benar-benar tidak kosong
-            if(!payload.fileData || payload.fileData.trim() === '') {
-                return showToast('File dokumentasi tidak boleh kosong!', 'error');
-            }
-            
-            closeModal();
-            showLoading('Mengupload ke Server...');
-            const res = await apiCall('upload', payload);
-            hideLoading();
-            if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+        function closeLinkModal() {
+            document.getElementById('link-upload-modal').classList.add('hidden');
+            currentLinkUploadRowIdx = null;
         }
 
         async function runSetupDatabase() {
             showLoading('Membangun struktur Database...');
             const res = await apiCall('setup');
             hideLoading();
-                        if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
+            if(res.status === 'success') { showToast(res.message); loadData(); } else { showToast(res.message, 'error'); }
         }
         
         // --- LOGIKA MANAJEMEN USER --- //
@@ -1076,20 +1028,20 @@
             if (res.status === 'success') {
                 const tbody = document.getElementById('userTableBody');
                 tbody.innerHTML = res.data.map(u => `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors border-b border-gray-100 dark:border-darkBorder">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">${u.name}</div>
                             <div class="text-xs text-gray-500">${u.username}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full ${u.role==='Administrator' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">${u.role}</span>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${u.role==='Administrator' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800'}">${u.role}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                             ${u.role==='Administrator' ? '<span class="italic text-gray-400">Semua Akses</span>' : (u.kampung || '-')}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="openUserModal(${u.rowIdx}, '${u.username}', '${u.name}', '${u.role}', '${u.kampung}')" class="text-secondary hover:text-primary mr-3"><i class="ph ph-pencil-simple text-lg"></i></button>
-                            <button onclick="deleteUser(${u.rowIdx})" class="text-red-400 hover:text-red-600"><i class="ph ph-trash text-lg"></i></button>
+                            <button onclick="openUserModal(${u.rowIdx}, '${u.username}', '${u.name}', '${u.role}', '${u.kampung}')" class="text-secondary hover:text-primary mr-3 transition-colors"><i class="ph ph-pencil-simple text-lg"></i></button>
+                            <button onclick="deleteUser(${u.rowIdx})" class="text-red-400 hover:text-red-600 transition-colors"><i class="ph ph-trash text-lg"></i></button>
                         </td>
                     </tr>
                 `).join('');
