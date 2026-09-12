@@ -402,7 +402,7 @@
         </div>
     </div>
 
-    <!-- UPLOAD MODAL -->
+    <!-- UPLOAD MODAL 
     <div id="upload-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-900/75 dark:bg-gray-900/90 backdrop-blur-sm" onclick="closeModal()"></div>
@@ -459,8 +459,53 @@
                 <input type="hidden" id="file-name">
             </div>
         </div>
-    </div>
+    </div> -->
 
+     <!-- MODAL LINK UPLOAD PHOTO (TAMBAHAN BARU) -->
+    <div id="link-upload-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-100 dark:border-darkBorder animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <i class="ph ph-link text-blue-600 dark:text-blue-400 text-xl"></i>
+                    Upload Foto via Link
+                </h3>
+                <button onclick="closeLinkModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Silakan upload foto dokumentasi untuk <span id="link-modal-nama" class="font-semibold text-blue-600 dark:text-blue-400"></span>.
+            </p>
+            
+            <div class="mb-5 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center flex flex-col items-center justify-center gap-3">
+                <p class="text-xs text-gray-500 dark:text-gray-400">1. Klik tombol di bawah ini untuk menuju folder/form upload eksternal:</p>
+                
+                <a id="link-modal-url" href="#" target="_blank" rel="noopener noreferrer" class="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                    <i class="ph ph-arrow-square-out text-lg"></i>
+                    Buka Link Upload
+                </a>
+                
+                <p id="link-modal-empty" class="hidden text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 p-2 rounded w-full border border-red-200 dark:border-red-800">
+                    <i class="ph ph-warning-circle mr-1"></i> Link Upload tidak tersedia untuk data ini.
+                </p>
+            </div>
+
+            <div class="mb-5 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300">
+                <i class="ph ph-info mr-1"></i> 2. Setelah selesai mengupload pada link di atas, wajib klik tombol <strong>Konfirmasi Selesai (ADA)</strong> di bawah ini agar status tersimpan.
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button onclick="closeLinkModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors">Batal</button>
+                <button id="btn-confirm-link-upload" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                    <i class="ph ph-check-circle text-lg"></i>
+                    Konfirmasi Selesai (ADA)
+                </button>
+            </div>
+        </div>
+    </div>
+<!-- Tbatas baru -->
+    
     <!-- TAMBAHAN MODAL: MANAJEMEN USER -->
     <div id="manage-user-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
